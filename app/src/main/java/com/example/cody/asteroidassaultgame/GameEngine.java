@@ -3,26 +3,33 @@ package com.example.cody.asteroidassaultgame;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.text.InputType;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.graphics.RectF;
+import android.widget.EditText;
 
 
 public class GameEngine extends SurfaceView implements Runnable {
 
     Context context;
 
+    private Bitmap bitmap;
     private Thread gameThread = null;
     private SurfaceHolder ourHolder;
     // Volatile is what allows us to change it while the activity is running
     private volatile boolean playing;
     private boolean paused = true;
+    private boolean gameOver = false;
     private Canvas canvas;
     private Paint paint;
     private int screenX;
@@ -30,12 +37,12 @@ public class GameEngine extends SurfaceView implements Runnable {
     private int score;
     private long fps;
     private long timeThisFrame;
+    private GameActivity gameActivity;
 
     private PlayerShip playerShip;
     private Asteroid[] asteroids = new Asteroid[15];
 
-
-    public GameEngine(Context context, int x, int y){
+    public GameEngine(Context context, int x, int y, GameActivity game){
         super(context);
         this.context = context;
 
@@ -44,7 +51,9 @@ public class GameEngine extends SurfaceView implements Runnable {
         // Set up screen size
         screenX = x;
         screenY = y;
-
+        gameActivity = game;
+        bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
+        bitmap = Bitmap.createScaledBitmap(bitmap, screenX, screenY, false);
 
         prepareLevel();
 
@@ -105,7 +114,8 @@ public class GameEngine extends SurfaceView implements Runnable {
         for(int i = 0; i < asteroids.length; i++) {
             // Check for asteroids colliding with ship
             if(RectF.intersects(asteroids[i].getRect(), playerShip.getRect())){
-                score = 0;
+                gameActivity.gameOverDialog(score);
+                gameOver = true;
                 // Lose game
                 // Update DB
                 // Restart
@@ -125,17 +135,18 @@ public class GameEngine extends SurfaceView implements Runnable {
         if(ourHolder.getSurface().isValid()) {
             canvas = ourHolder.lockCanvas();
             // Draw background
-            canvas.drawColor(Color.argb(255, 0, 0, 0));
+            //canvas.drawColor(Color.argb(255, 0, 0, 0));
+            canvas.drawBitmap(bitmap, 0, 0, paint);
 
             // Draw everything else to the screen
             canvas.drawBitmap(playerShip.getBitmap(), playerShip.getX(), playerShip.getY(), paint);
             for(int i = 0; i < asteroids.length; i++){
                 canvas.drawBitmap(asteroids[i].getBitmap(), asteroids[i].getX(), asteroids[i].getY(), paint);
                 // Uncomment to see collision boxes for asteroids
-                canvas.drawRect(asteroids[i].getRect(), paint);
+                //canvas.drawRect(asteroids[i].getRect(), paint);
             }
             // Uncomment to see collision box for the player ship
-            canvas.drawRect(playerShip.getRect(), paint);
+            //canvas.drawRect(playerShip.getRect(), paint);
 
             Typeface typeface = getResources().getFont(R.font.press_start_2p);
             paint.setTypeface(typeface);
@@ -143,8 +154,10 @@ public class GameEngine extends SurfaceView implements Runnable {
             paint.setTextSize(80);
             canvas.drawText("Score: " + score, 20, 90, paint);
 
-            if(paused) {
+            if(paused && !gameOver) {
                 canvas.drawText("PAUSED", (screenX/3), (screenY/2), paint);
+            } else if(paused && gameOver) {
+                canvas.drawText("GAME OVER!", (screenX/4), (screenY/2), paint);
             }
 
             // Show everything that was drawn

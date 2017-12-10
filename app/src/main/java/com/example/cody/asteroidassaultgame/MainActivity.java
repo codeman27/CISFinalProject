@@ -13,12 +13,22 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        TextView tv = findViewById(R.id.tvPlay);
+        TextView tvPlay = findViewById(R.id.tvPlayBtn);
 
-        tv.setOnClickListener(new View.OnClickListener(){
+        tvPlay.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
                 Intent intent = new Intent(MainActivity.this, GameActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        TextView tvScores = findViewById(R.id.tvScoresBtn);
+
+        tvScores.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                Intent intent = new Intent(MainActivity.this, TopScoresActivity.class);
                 startActivity(intent);
             }
         });

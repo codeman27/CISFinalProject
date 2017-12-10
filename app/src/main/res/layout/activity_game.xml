@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.cody.asteroidassaultgame.GameActivity"
-    android:background="@drawable/pixel_space">
+    android:background="@drawable/pixel_space"
+    android:fontFamily="@font/press_start_2p">
 
 </android.support.constraint.ConstraintLayout>
