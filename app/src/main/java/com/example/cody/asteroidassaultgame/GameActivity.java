@@ -69,15 +69,7 @@ public class GameActivity extends Activity {
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                if(input.length() > 0) {
-//                    m_Text = input.getText().toString();
-//                    finish();
-//                    AddData(m_Text);
-//                }
-//                Boolean wantToCloseDialog = false;
-//                if(wantToCloseDialog) {
-//                    dialog.dismiss();
-//                }
+//
             }
         });
 
@@ -95,7 +87,7 @@ public class GameActivity extends Activity {
                         if(input.length() > 0) {
                             m_Text = input.getText().toString();
                             finish();
-                            AddData(m_Text);
+                            AddData(m_Text, score);
                             wantToCloseDialog = true;
                         }
                         if(wantToCloseDialog)
@@ -106,8 +98,8 @@ public class GameActivity extends Activity {
         });
     }
 
-    public void AddData(String newEntry) {
-        boolean insertData = databaseHelper.addData(newEntry);
+    public void AddData(String newEntry, int score) {
+        boolean insertData = databaseHelper.addData(newEntry, score);
         if(insertData) {
             Log.d("Success", "Data added to database");
         } else {
