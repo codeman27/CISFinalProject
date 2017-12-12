@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.test.RenamingDelegatingContext;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,13 +22,20 @@ import static org.junit.Assert.*;
 public class ExampleInstrumentedTest {
 
     Context appContext;
+    Context instContext;
+
+    //private GameActivity gameActivity = new GameActivity();
+    //Robolectric test library?
+
     private PlayerShip playerShip;
-    private DatabaseHelper databaseHelper = new DatabaseHelper(appContext);
+    DatabaseHelper databaseHelper = new DatabaseHelper(instContext);
 
     @Test
     public void useAppContext() throws Exception {
+
         // Context of the app under test.
         appContext = InstrumentationRegistry.getTargetContext();
+        instContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
         assertEquals("com.example.cody.asteroidassaultgame", appContext.getPackageName());
     }
@@ -44,7 +52,12 @@ public class ExampleInstrumentedTest {
         //assertEquals(databaseHelper.addData("TEST", 500), true);
     }
 
+    @Test
     public void test_DBRead() {
+        //Non Static
+        //DatabaseHelper.getData();
+
+
         //Cursor data = databaseHelper.getData();
         //ArrayList<String> nameData = new ArrayList<>();
 
