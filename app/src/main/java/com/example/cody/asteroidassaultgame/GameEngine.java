@@ -137,12 +137,10 @@ public class GameEngine extends SurfaceView implements Runnable {
         for(int i = 0; i < asteroids.length; i++) {
             // Check for asteroids colliding with ship
             if(RectF.intersects(asteroids[i].getRect(), playerShip.getRect())){
+                // LOSE GAME
                 soundPool.play(playerDeath, 1, 1, 0, 0, 1);
                 gameActivity.gameOverDialog(score);
                 gameOver = true;
-                // Lose game
-                // Update DB
-                // Restart
             }
 
             if(asteroids[i].getY() < screenY) {
