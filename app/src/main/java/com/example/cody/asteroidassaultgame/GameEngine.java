@@ -1,22 +1,24 @@
 package com.example.cody.asteroidassaultgame;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.text.InputType;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.SoundPool;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.graphics.RectF;
-import android.widget.EditText;
+
+import java.io.IOException;
 
 
 public class GameEngine extends SurfaceView implements Runnable {
@@ -39,6 +41,10 @@ public class GameEngine extends SurfaceView implements Runnable {
     private long timeThisFrame;
     private GameActivity gameActivity;
 
+    //Sound things
+    private SoundPool soundPool;
+    private int playerDeath = -1;
+
     private PlayerShip playerShip;
     private Asteroid[] asteroids = new Asteroid[15];
 
@@ -54,6 +60,22 @@ public class GameEngine extends SurfaceView implements Runnable {
         gameActivity = game;
         bitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.background);
         bitmap = Bitmap.createScaledBitmap(bitmap, screenX, screenY, false);
+
+        soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC,0);
+
+        try{
+            // Create objects of the 2 required classes
+            AssetManager assetManager = context.getAssets();
+            AssetFileDescriptor descriptor;
+
+            // Load our fx in memory ready for use
+            descriptor = assetManager.openFd("playerexplode.ogg");
+            playerDeath = soundPool.load(descriptor, 0);
+
+        }catch(IOException e){
+            // Print an error message to the console
+            Log.e("error", "failed to load sound files");
+        }
 
         prepareLevel();
 
@@ -79,8 +101,8 @@ public class GameEngine extends SurfaceView implements Runnable {
     void prepareLevel() {
 
         score = 0;
-
         playerShip = new PlayerShip(context, screenX, screenY);
+
 
         for(int i = 0; i < asteroids.length; i++) {
             asteroids[i] = new Asteroid(context, screenX, screenY, score);
@@ -89,6 +111,7 @@ public class GameEngine extends SurfaceView implements Runnable {
 
     @Override
     public void run(){
+
         while(playing) {
             long startFrameTime = System.currentTimeMillis();
 
@@ -114,6 +137,7 @@ public class GameEngine extends SurfaceView implements Runnable {
         for(int i = 0; i < asteroids.length; i++) {
             // Check for asteroids colliding with ship
             if(RectF.intersects(asteroids[i].getRect(), playerShip.getRect())){
+                soundPool.play(playerDeath, 1, 1, 0, 0, 1);
                 gameActivity.gameOverDialog(score);
                 gameOver = true;
                 // Lose game

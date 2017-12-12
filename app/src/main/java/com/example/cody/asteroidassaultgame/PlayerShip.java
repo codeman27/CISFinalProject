@@ -54,7 +54,6 @@ public class PlayerShip {
         if(shipMoving == LEFT) {
             if(x >= width){
                 x = x - shipSpeed/fps;
-                System.out.println(shipSpeed);
             }
         }
         if(shipMoving == RIGHT) {
